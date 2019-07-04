@@ -60,8 +60,12 @@ def main():
 
     # Which devices we wish to use in this experiment. See the
     # pydoc documentation for a list of # options.
+    #graphics='gpu' # 'datapixx' is another option
+    #inputs='keyboard' # 'responsepixx' is another option
+    #scrn = 0
     graphics='datapixx' # 'datapixx' is another option
     inputs='responsepixx' # 'responsepixx' is another option
+    scrn = 1
     photometer=None
 
     # Screen size
@@ -88,8 +92,10 @@ def main():
     # Create the hrl object with the above fields. All the default argument names are
     # given just for illustration.
     hrl = HRL(graphics=graphics,inputs=inputs,photometer=photometer,
-                scrn=1,wdth=wdth,hght=hght,bg=bg,fs=fs)
+                scrn=scrn,wdth=wdth,hght=hght,bg=bg,fs=fs)
 
+    
+    
     ### measuring frame rate
     nIdentical=20
     nMaxFrames=130
@@ -130,7 +136,7 @@ def main():
     print "%f +- %f (mean +- 1 SD)" % (1.0/(np.mean(frameIntervals[-nIdentical:])), np.std(1.0/np.array(frameIntervals[-nIdentical:])))
 
     # manually added
-    rate = 130.0 
+    #rate = 130.0 
     # setting threshold for dropped frames detection
     refreshThreshold = 1.0 / rate * 1.2
 
@@ -145,22 +151,23 @@ def main():
     # We create a sinusoidal grating texture
     texsize = (256, 256)
     
-    contrast = 0.4
+    contrast = 0.3
     
-    gauss =  normalize(makeGaussian(texsize[0], fwhm = 80, center=(128, 128)))
+    gauss =  normalize(makeGaussian(texsize[0], fwhm = 60, center=(128, 128)))
     
     
-    # timing and drawing 100 frames
+    # timing and drawing X frames
     nDroppedFrames = 0
     firsttimeon = True
-    frameIntervals = []
+    frameIntervals = []    
+    for i in range(130*10): 
 
-    for i in range(130*10):    
-        s = normalize(np.sin(np.linspace(0, 10*pi, texsize[0])+i))
-        grating1 = np.tile(s, (texsize[1], 1))
+        # two gabors with different spatial frequency
+        s1 = normalize(np.sin(np.linspace(0, 10*pi, texsize[0])+i))
+        grating1 = np.tile(s1, (texsize[1], 1))
         
-        s = normalize(np.sin(np.linspace(0, 20*pi, texsize[0])+i))
-        grating2 = np.tile(s, (texsize[1], 1))
+        s2 = normalize(np.sin(np.linspace(0, 20*pi, texsize[0])+i))
+        grating2 = np.tile(s2, (texsize[1], 1))
         
         gabor1 = normalize(grating1 * gauss, (bg, bg+contrast))
         gabor2 = normalize(grating2 * gauss, (bg, bg+contrast))
@@ -173,7 +180,7 @@ def main():
         tex2.draw(pos=(3*wqtr-texsize[0]/2.0, hhlf-texsize[1]/2.0), sz=texsize, rot=90)
         
         # flip
-        hrl.graphics.flip(clr=True)
+        hrl.graphics.flip()
         
         # timing
         frameTime = defaultClock.getTime()

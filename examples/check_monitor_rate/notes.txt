@@ -13,7 +13,8 @@ sudo ./services.sh
 to restart the services, sudo ./restart_services.sh
 
 
-I did measurements (2019-07-04) with and without services, no apparent difference.
+I did measurements (2019-07-04) with and without services, no difference in number of dropped frames
+BUT difference in refresh rate. Rate closer to nominal when services are OFF.
 
 The script gave consistently 1 dropped frame around frame 917 - 925, that is 
 around 7 seconds after start of the test. I dont know why this frame is dropped at that time, systematically.

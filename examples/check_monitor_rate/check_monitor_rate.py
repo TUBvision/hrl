@@ -160,7 +160,7 @@ def main():
     nDroppedFrames = 0
     firsttimeon = True
     frameIntervals = []    
-    for i in range(130*10): 
+    for i in range(130*30): 
 
         # two gabors with different spatial frequency
         s1 = normalize(np.sin(np.linspace(0, 10*pi, texsize[0])+i))

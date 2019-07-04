@@ -1,0 +1,22 @@
+check_monitor_rate.py  measures the refresh rate of the Siemens monitor.
+Its nominal rate is 130 Hz. 
+
+- Note that in nvidia-settings one should unclick the 'sync to  vblank' for
+the measurement to work. No idea why it should be unchecked.
+in the menu the option is found in "X Screen 1" and then "X Server XVideo Settings"
+
+
+One can temporarily stop the OS services that could be time critical (cron, etc).
+In the home folder (/home/experimenter/) the scrip to stop services is
+sudo ./services.sh
+
+to restart the services, sudo ./restart_services.sh
+
+
+I did measurements (2019-07-04) with and without services, no apparent difference.
+
+The script gave consistently 1 dropped frame around frame 917 - 925, that is 
+around 7 seconds after start of the test. I dont know why this frame is dropped at that time, systematically.
+Otherwise test pass, having 1 dropped frame on 30 seconds (130*30) of stimulus presentation.
+
+/ GA

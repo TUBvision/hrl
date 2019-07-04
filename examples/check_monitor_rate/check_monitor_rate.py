@@ -1,4 +1,5 @@
 """
+Calculate monitor rate and checks for dropped frames
 
 """
 
@@ -59,16 +60,21 @@ def main():
 
     # Which devices we wish to use in this experiment. See the
     # pydoc documentation for a list of # options.
-    graphics='gpu' # 'datapixx' is another option
-    inputs='keyboard' # 'responsepixx' is another option
+    graphics='datapixx' # 'datapixx' is another option
+    inputs='responsepixx' # 'responsepixx' is another option
     photometer=None
 
     # Screen size
-    wdth = 1440
-    hght = 900
+    wdth = 1024
+    hght = 768
+    
+    whlf = wdth/2.0
+    hhlf = hght/2.0
+    weht = wdth/8.0
+    heht = hght/8.0
     
     # background value
-    bg = 0.3
+    bg = 0.4
     
     # Whether or not to use fullscreen. You probably want to do this when
     # actually running experiments, but when just developing one, fullscreen
@@ -81,13 +87,13 @@ def main():
 
     # Create the hrl object with the above fields. All the default argument names are
     # given just for illustration.
-    hrl = HRL(graphics=graphics,inputs=inputs,photometer=photometer
-            ,wdth=wdth,hght=hght,bg=bg,fs=fs)
+    hrl = HRL(graphics=graphics,inputs=inputs,photometer=photometer,
+                scrn=1,wdth=wdth,hght=hght,bg=bg,fs=fs)
 
     ### measuring frame rate
-    nIdentical=10
-    nMaxFrames=100
-    nWarmUpFrames=10
+    nIdentical=20
+    nMaxFrames=130
+    nWarmUpFrames=130
     threshold=1
     refreshThreshold = 1.0 
     nDroppedFrames = 0
@@ -95,32 +101,36 @@ def main():
     for frameN in range(nWarmUpFrames):
         hrl.graphics.flip()
         
-    # run test frames
+    # run test frames   
     firsttimeon = True
     frameIntervals = []
     rate = 0
     for frameN in range(nMaxFrames):
         
-        hrl.graphics.flip()
+        hrl.graphics.flip(clr=True)
         
-        frameTime = now = defaultClock.getTime()
+        frameTime = defaultClock.getTime()
         
         if firsttimeon:
             firsttimeon = False
-            lastFrameT = now
-            pass
-
-        deltaT = now - lastFrameT
-        lastFrameT = now
-        frameIntervals.append(deltaT)
-                            
+            lastFrameT = frameTime
+            
+        else:
+            deltaT = frameTime - lastFrameT
+            lastFrameT = frameTime
+            frameIntervals.append(deltaT)
+            
+                
         if (len(frameIntervals) >= nIdentical and
                 (np.std(frameIntervals[-nIdentical:]) <(threshold / 1000.0))):
             rate = 1.0 / np.mean(frameIntervals[-nIdentical:])
-            
+    
+    #print frameIntervals
     print "Measured refresh rate"
     print "%f +- %f (mean +- 1 SD)" % (1.0/(np.mean(frameIntervals[-nIdentical:])), np.std(1.0/np.array(frameIntervals[-nIdentical:])))
 
+    # manually added
+    rate = 130.0 
     # setting threshold for dropped frames detection
     refreshThreshold = 1.0 / rate * 1.2
 
@@ -145,7 +155,7 @@ def main():
     firsttimeon = True
     frameIntervals = []
 
-    for i in range(1000):    
+    for i in range(130*10):    
         s = normalize(np.sin(np.linspace(0, 10*pi, texsize[0])+i))
         grating1 = np.tile(s, (texsize[1], 1))
         
